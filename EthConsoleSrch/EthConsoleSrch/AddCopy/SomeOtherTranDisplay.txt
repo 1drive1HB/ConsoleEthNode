@@ -1,0 +1,122 @@
+﻿
+//using Nethereum.Web3;
+
+//namespace Eth02.Utils
+//{
+//    public static class TransactionDisplay
+//    {
+//        public static async Task DisplayPendingTransactions(Web3 web3)
+//        {
+//            try
+//            {
+//                var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+//                var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+//                Console.WriteLine("|                           Transaction Hash                            |       From     |       To      |   Value (ETH)   |  Gas Price  |    Gas   |    Nonce   | Status |");
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+//                foreach (var txHash in filterChanges)
+//                {
+//                    try
+//                    {
+//                        var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
+//                        var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+
+//                        // Ensure tx and receipt are not null before accessing their properties
+//                        if (tx != null && receipt != null)
+//                        {
+//                            // Display transaction details in a table format
+//                            Console.WriteLine($"| {Format(tx.TransactionHash, 66)} " +
+//                                              $"| {Format(tx.From, 16)} " +
+//                                              $"| {Format(tx.To, 16)} " +
+//                                              $"| {Format(Web3.Convert.FromWei(tx.Value), 13)} " +
+//                                              $"| {Format(Web3.Convert.FromWei(tx.GasPrice), 11)} " +
+//                                              $"| {Format(tx.Gas, 8)} " +
+//                                              $"| {Format(tx.Nonce, 6)} " +
+//                                              $"| {Format(GetTransactionStatus(receipt), 7)} |");
+//                        }
+//                        else
+//                        {
+//                            Console.WriteLine($"Error: Transaction or receipt is null for hash: {txHash}");
+//                        }
+//                    }
+//                    catch (NullReferenceException)
+//                    {
+//                        Console.WriteLine($"Error: Object reference not set to an instance of an object for hash: {txHash}");
+//                    }
+//                    catch (Exception ex)
+//                    {
+//                        Console.WriteLine($"Error while processing transaction: {ex.Message}");
+//                    }
+//                }
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+//            }
+//            catch (Exception ex)
+//            {
+//                Console.WriteLine($"Error while retrieving pending transactions: {ex.Message}");
+//            }
+//        }
+
+//        private static string Format(object value, int width)
+//        {
+//            return value?.ToString().PadRight(width).Substring(0, Math.Min(value.ToString().Length, width)) ?? "".PadRight(width);
+//        }
+
+//        private static string GetTransactionStatus(Nethereum.RPC.Eth.DTOs.TransactionReceipt receipt)
+//        {
+//            return receipt != null ? "Pending" : "null";
+//        }
+//    }
+//}
+
+
+
+
+//using Nethereum.Web3;
+
+//namespace Eth02.Utils
+//{
+//    public static class TransactionDisplay
+//    {
+//        public static async Task DisplayPendingTransactions(Web3 web3)
+//        {
+//            try
+//            {
+//                var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+//                var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+//                Console.WriteLine("|                           Transaction Hash                            |       From     |       To      |   Value (ETH)   |  Gas Price  |    Gas   |    Nonce   | Status |");
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+//                foreach (var txHash in filterChanges)
+//                {
+//                    var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
+//                    var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+
+//                    // Display transaction details in a table format
+//                    //Console.WriteLine($"| {Format(tx.TransactionHash, 66)} | {Format(tx.From, 31)} | {Format(tx.To, 31)} | {Format(Web3.Convert.FromWei(tx.Value), 24)} | {Format(Web3.Convert.FromWei(tx.GasPrice), 24)} | {Format(tx.Gas, 18)} | {Format(tx.Nonce, 14)} | {Format(GetTransactionStatus(receipt), 15)} |");
+//                    Console.WriteLine($"| {Format(tx.TransactionHash, 66)} | {Format(tx.From, 16)} | {Format(tx.To, 16)} | {Format(Web3.Convert.FromWei(tx.Value), 13)} | {Format(Web3.Convert.FromWei(tx.GasPrice), 11)} | {Format(tx.Gas, 8)} | {Format(tx.Nonce, 6)} | {Format(GetTransactionStatus(receipt), 7)} |");
+
+//                }
+
+//                Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+//            }
+//            catch (Exception ex)
+//            {
+//                Console.WriteLine($"Error while retrieving pending transactions: {ex.Message}");
+//            }
+//        }
+
+//        private static string Format(object value, int width)
+//        {
+//            return value?.ToString().PadRight(width).Substring(0, Math.Min(value.ToString().Length, width)) ?? "".PadRight(width);
+//        }
+
+//        private static string GetTransactionStatus(Nethereum.RPC.Eth.DTOs.TransactionReceipt receipt)
+//        {
+//            return receipt != null ? "Pending" : "null";
+//        }
+//    }
+//}

@@ -1,0 +1,72 @@
+﻿using Eth02.Models;
+using Eth02.Services;
+using Eth02.Utils;
+
+namespace Eth02
+{
+    public class Program
+    {
+        static async Task Main(string[] args)
+        {
+            Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            Console.WriteLine("Welcome to Ethereum Node Connection Program!");
+            Console.WriteLine("Please choose an option:");
+            Console.WriteLine("1. Use default node URL (https://eth-mainnet.g.alchemy.com/v2/demo)");
+            Console.WriteLine("2. Use a second custom URL (https://ethereum-rpc.publicnode.com)");
+            Console.WriteLine("3. Enter a custom URL");
+            Console.WriteLine("@@@@@@@@@@@@@@@using Mainnet@@@@@@@@@@@@@@@@@@");
+
+            string defaultNodeUrl = "https://eth-mainnet.g.alchemy.com/v2/demo";
+            string secondCustomNodeUrl = "https://ethereum-rpc.publicnode.com";
+            string nodeUrl = "";
+
+            Console.Write("EnterNumber: ");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    nodeUrl = defaultNodeUrl;
+                    break;
+                case "2":
+                    nodeUrl = secondCustomNodeUrl;
+                    break;
+                case "3":
+                    nodeUrl = InputHelper.GetUserInput("Enter custom URL: ");
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Using default node URL.");
+                    nodeUrl = defaultNodeUrl;
+                    break;
+            }
+
+            var node = new EthereumNode { NodeUrl = nodeUrl };
+            var ethereumService = new EthereumService();
+
+            bool connected = false;
+            while (!connected)
+            {
+                if (await ethereumService.IsConnected(node))
+                {
+                    connected = true;
+                    Console.WriteLine($"Connected to Ethereum node: {nodeUrl}");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to connect to Ethereum node. Retrying in 3 seconds...");
+                    Thread.Sleep(3000); // Delay for 3 seconds before retrying
+                }
+            }
+
+            var address = InputHelper.GetUserInput("Enter Ethereum Address (or press Enter to skip balance retrieval): ");
+            if (!string.IsNullOrWhiteSpace(address))
+            {
+                var balance = await ethereumService.GetBalance(node, address);
+                if (balance != null)
+                {
+                    Console.WriteLine($"Balance of address {address}: {balance} ETH");
+                }
+            }
+        }
+    }
+}
+

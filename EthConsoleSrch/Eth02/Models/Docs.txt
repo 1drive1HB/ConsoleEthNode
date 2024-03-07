@@ -1,0 +1,9 @@
+﻿-- Short Desc -- 
+
+This program serves as an Ethereum Node Connection tool. 
+It allows users to interact with Ethereum nodes, providing options 
+to connect to default or custom node URLs. 
+Users can display the latest block number, choose Ethereum addresses, and view balance details. 
+The program utilizes classes from the `Eth02.Services` and `Eth02.Utils` 
+namespaces to handle Ethereum-related functionalities efficiently.
+

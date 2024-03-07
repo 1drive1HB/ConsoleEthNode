@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Eth02": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\Mat\\Desktop\\KL_share\\EthConsoleSrch\\Eth02\\bin\\Debug\\net6.0-windows"
+    }
+  }
+}

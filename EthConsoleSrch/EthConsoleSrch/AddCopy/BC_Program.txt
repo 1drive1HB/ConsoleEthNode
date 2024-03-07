@@ -1,0 +1,447 @@
+﻿using Eth02.Services;
+using Eth02.Utils;
+using Nethereum.Web3;
+
+namespace Eth02
+{
+    public class Program
+    {
+        static async Task Main(string[] args)
+        {
+            Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            Console.WriteLine("Welcome to Ethereum Node Connection Program!");
+            Console.WriteLine("Please choose an option:");
+            Console.WriteLine("1. Use default node URL (https://eth-mainnet.g.alchemy.com/v2/demo)");
+            Console.WriteLine("2. Use a second custom URL (https://ethereum-rpc.publicnode.com)");
+            Console.WriteLine("3. Enter a custom URL");
+            Console.WriteLine("@@@@@@@@@@@@@@@using Mainnet@@@@@@@@@@@@@@@@@@");
+
+            string defaultNodeUrl = "https://eth-mainnet.g.alchemy.com/v2/demo";
+            string secondCustomNodeUrl = "https://ethereum-rpc.publicnode.com";
+            string nodeUrl = "";
+
+            Console.Write("EnterNumber: ");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    nodeUrl = defaultNodeUrl;
+                    break;
+                case "2":
+                    nodeUrl = secondCustomNodeUrl;
+                    break;
+                case "3":
+                    nodeUrl = GetUserCustomUrl();
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Using default node URL.");
+                    nodeUrl = defaultNodeUrl;
+                    break;
+            }
+
+            var ethereumService = new EthereumService(nodeUrl);
+            if (await ethereumService.IsConnected())
+            {
+                Console.WriteLine("Connection Successful");
+
+                var web3 = new Web3(nodeUrl);
+
+                // Display the latest block number
+                var latestBlockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+                Console.WriteLine($"The latest block number is: {latestBlockNumber.Value}");
+
+                string addressChoice;
+                do
+                {
+                    Console.WriteLine("Choose an Ethereum address:");
+                    Console.WriteLine("1. 0x00000000219ab540356cbb839cbe05303d7705fa");
+                    Console.WriteLine("2. Second address");
+                    Console.WriteLine("3. Third address");
+                    Console.WriteLine("4. Custom address (paste it into the console)");
+                    Console.Write("Enter choice: ");
+                    addressChoice = Console.ReadLine();
+
+                    string address;
+                    switch (addressChoice)
+                    {
+                        case "1":
+                            address = "0x00000000219ab540356cbb839cbe05303d7705fa";
+                            break;
+                        case "2":
+                            address = "Second address";
+                            break;
+                        case "3":
+                            address = "Third address";
+                            break;
+                        case "4":
+                            Console.Write("Enter custom Ethereum address: ");
+                            address = Console.ReadLine();
+                            break;
+                        default:
+                            Console.WriteLine("Invalid choice. Please try again.");
+                            address = null;
+                            break;
+                    }
+
+                    await TransactionDisplay.DisplayPendingTransactions(web3);
+                    await GetAndDisplayBalance(web3, address);
+                } while (!string.IsNullOrWhiteSpace(addressChoice));
+            }
+            else
+            {
+                Console.WriteLine("Failed to connect to Ethereum node. Exiting program.");
+            }
+        }
+
+        static string GetUserCustomUrl()
+        {
+            Console.Write("Enter custom URL: ");
+            return Console.ReadLine();
+        }
+
+        static async Task GetAndDisplayBalance(Web3 web3, string address)
+        {
+            if (!string.IsNullOrWhiteSpace(address))
+            {
+                var balance = await web3.Eth.GetBalance.SendRequestAsync(address);
+                Console.WriteLine($"Balance of address {address}: {Web3.Convert.FromWei(balance)} ETH");
+            }
+        }
+    }
+}
+
+
+//using Nethereum.Web3;
+
+//namespace Eth02
+//{
+//    public class Program
+//    {
+//        static async Task Main(string[] args)
+//        {
+//            Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//            Console.WriteLine("Welcome to Ethereum Node Connection Program!");
+//            Console.WriteLine("Please choose an option:");
+//            Console.WriteLine("1. Use default node URL (https://eth-mainnet.g.alchemy.com/v2/demo)");
+//            Console.WriteLine("2. Use a second custom URL (https://ethereum-rpc.publicnode.com)");
+//            Console.WriteLine("3. Enter a custom URL");
+//            Console.WriteLine("@@@@@@@@@@@@@@@using Mainnet@@@@@@@@@@@@@@@@@@");
+
+//            string defaultNodeUrl = "https://eth-mainnet.g.alchemy.com/v2/demo";
+//            string secondCustomNodeUrl = "https://ethereum-rpc.publicnode.com";
+//            string nodeUrl = "";
+
+//            Console.Write("EnterNumber: ");
+//            string choice = Console.ReadLine();
+//            switch (choice)
+//            {
+//                case "1":
+//                    nodeUrl = defaultNodeUrl;
+//                    break;
+//                case "2":
+//                    nodeUrl = secondCustomNodeUrl;
+//                    break;
+//                case "3":
+//                    nodeUrl = GetUserCustomUrl();
+//                    break;
+//                default:
+//                    Console.WriteLine("Invalid choice. Using default node URL.");
+//                    nodeUrl = defaultNodeUrl;
+//                    break;
+//            }
+
+//            var web3 = new Web3(nodeUrl);
+//            // Establish connection to the Ethereum node
+//            if (await IsConnected(web3))
+//            {
+//                Console.WriteLine("Connection Successful");
+
+//                // Display the latest block number
+//                var latestBlockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+//                Console.WriteLine($"The latest block number is: {latestBlockNumber.Value}");
+
+//                //// Retrieve pending transactions
+//                //var pendingTxFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+//                //var pendingTx = await web3.Eth.Filters.GetFilterChangesForEthNewFilter.SendRequestAsync(pendingTxFilter);
+
+//                //// Loop through the list of transactions and display the transaction hashes
+//                //foreach (var tx in pendingTx) // status pending (uncommitted transaction)
+//                //{
+//                //    Console.WriteLine($"Hash of a Pending Transaction: {tx}");
+//                //}
+
+//                string addressChoice;
+//                do
+//                {
+//                    Console.WriteLine("Choose an Ethereum address:");
+//                    Console.WriteLine("1. 0x00000000219ab540356cbb839cbe05303d7705fa");
+//                    Console.WriteLine("2. Second address");
+//                    Console.WriteLine("3. Third address");
+//                    Console.WriteLine("4. Custom address (paste it into the console)");
+//                    Console.Write("Enter choice: ");
+//                    addressChoice = Console.ReadLine();
+
+//                    string address;
+//                    switch (addressChoice)
+//                    {
+//                        case "1":
+//                            address = "0x00000000219ab540356cbb839cbe05303d7705fa";
+//                            break;
+//                        case "2":
+//                            address = "Second address";
+//                            break;
+//                        case "3":
+//                            address = "Third address";
+//                            break;
+//                        case "4":
+//                            Console.Write("Enter custom Ethereum address: ");
+//                            address = Console.ReadLine();
+//                            break;
+//                        default:
+//                            Console.WriteLine("Invalid choice. Please try again.");
+//                            address = null;
+//                            break;
+//                    }
+
+//                    await DisplayPendingTransactions(web3);
+//                    await GetAndDisplayBalance(web3, address);
+//                } while (!string.IsNullOrWhiteSpace(addressChoice));
+//            }
+//            else
+//            {
+//                Console.WriteLine("Failed to connect to Ethereum node. Exiting program.");
+//            }
+//        }
+
+//        static string GetUserCustomUrl()
+//        {
+//            Console.Write("Enter custom URL: ");
+//            return Console.ReadLine();
+//        }
+
+//        static async Task<bool> IsConnected(Web3 web3)
+//        {
+//            try
+//            {
+//                // Check if the connection to the node is successful
+//                var blockNumber = await web3.Eth.Blocks.GetBlockNumber.SendRequestAsync();
+//                return blockNumber.Value >= 0;
+//            }
+//            catch
+//            {
+//                return false;
+//            }
+//        }
+
+//        static async Task GetAndDisplayBalance(Web3 web3, string address)
+//        {
+//            // If user provides an Ethereum address, retrieve and display its balance
+//            if (!string.IsNullOrWhiteSpace(address))
+//            {
+//                var balance = await web3.Eth.GetBalance.SendRequestAsync(address);
+//                Console.WriteLine($"Balance of address {address}: {Web3.Convert.FromWei(balance)} ETH");
+//            }
+//        }
+
+//        static async Task DisplayPendingTransactions(Web3 web3)
+//        {
+//            try
+//            {
+//                var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+//                var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+
+//                foreach (var txHash in filterChanges)
+//                {
+//                    var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
+//                    var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+
+//                    Console.WriteLine($"TransactionReceipt: Pending");
+//                    Console.WriteLine($"TransactionHash: {tx.TransactionHash}");
+//                    Console.WriteLine($"From: {tx.From}");
+//                    Console.WriteLine($"To: {tx.To}");
+//                    Console.WriteLine($"Value: {Web3.Convert.FromWei(tx.Value)} ETH");
+//                    Console.WriteLine($"Input: {tx.Input}");
+//                    Console.WriteLine($"MaxFeePerGas: {tx.MaxFeePerGas}");
+//                    Console.WriteLine($"R: {tx.R}");
+//                    Console.WriteLine($"S: {tx.S}");
+//                    Console.WriteLine($"GasPrice: {tx.GasPrice}");
+//                    Console.WriteLine($"Gas: {tx.Gas}");
+//                    Console.WriteLine($"Nonce: {tx.Nonce}");
+//                    Console.WriteLine($"DateTimeNow: -- {0} --", DateTime.Now.ToLongDateString());
+
+//                    if (receipt != null)
+//                    {
+//                        Console.WriteLine($"TransactionReceipt: Confirmed");
+//                        Console.WriteLine($"BlockHash: {receipt.BlockHash}");
+//                        Console.WriteLine($"BlockNumber: {receipt.BlockNumber}");
+//                        Console.WriteLine($"GasUsed: {receipt.GasUsed}");
+//                    }
+//                    else
+//                    {
+//                        Console.WriteLine($"TransactionReceipt: Pending");
+//                    }
+
+//                    Console.WriteLine();
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                Console.WriteLine($"Error while retrieving pending transactions: {ex.Message}");
+//            }
+//        }
+//    }
+//}
+
+
+
+//using Nethereum.Web3;
+
+//namespace Eth02.Utils
+//{
+//    public static class TransactionDisplay
+//    {
+//        public static async Task DisplayPendingTransactions(Web3 web3)
+//        {
+//            try
+//            {
+//                var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+//                var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+
+//                foreach (var txHash in filterChanges)
+//                {
+//                    var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
+//                    var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+
+//                    // Display transaction details
+//                    Console.WriteLine($"TransactionHash: {tx.TransactionHash}");
+//                    Console.WriteLine($"From: {tx.From}");
+//                    Console.WriteLine($"To: {tx.To}");
+//                    Console.WriteLine($"Value: {Web3.Convert.FromWei(tx.Value)} ETH");
+//                    Console.WriteLine($"Input: {tx.Input}");
+//                    Console.WriteLine($"MaxFeePerGas: {tx.MaxFeePerGas}");
+//                    Console.WriteLine($"R: {tx.R}");
+//                    Console.WriteLine($"S: {tx.S}");
+//                    Console.WriteLine($"GasPrice: {tx.GasPrice}");
+//                    Console.WriteLine($"Gas: {tx.Gas}");
+//                    Console.WriteLine($"Nonce: {tx.Nonce}");
+
+//                    if (receipt != null)
+//                    {
+//                        Console.WriteLine($"TransactionReceipt: Confirmed");
+//                        Console.WriteLine($"BlockHash: {receipt.BlockHash}");
+//                        Console.WriteLine($"BlockNumber: {receipt.BlockNumber}");
+//                        Console.WriteLine($"GasUsed: {receipt.GasUsed}");
+//                    }
+//                    else
+//                    {
+//                        Console.WriteLine($"TransactionReceipt: Pending");
+//                    }
+
+//                    Console.WriteLine();
+//                }
+//            }
+//            catch (Exception ex)
+//            {
+//                Console.WriteLine($"Error while retrieving pending transactions: {ex.Message}");
+//            }
+//        }
+//    }
+//}
+
+///*
+
+// System.NullReferenceException: 'Object reference not set to an instance of an object.'
+
+//    tx was null.
+// */ 
+
+
+
+
+//using System;
+//using System.Collections.Generic;
+//using System.Threading.Tasks;
+//using Nethereum.Web3;
+
+//namespace Eth02.Utils
+//{
+//    public static class TransactionDisplay
+//    {
+//        public static async Task DisplayPendingTransactions(Web3 web3)
+//        {
+//            try
+//            {
+//                var pendingFilter = await web3.Eth.Filters.NewPendingTransactionFilter.SendRequestAsync();
+//                var filterChanges = await web3.Eth.Filters.GetFilterChangesForBlockOrTransaction.SendRequestAsync(pendingFilter);
+
+//                if (filterChanges.Count == 0)
+//                {
+//                    Console.WriteLine("No pending transactions.");
+//                    return;
+//                }
+
+//                Console.WriteLine($"Number of transactions: {filterChanges.Count}");
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+//                Console.WriteLine("|  #  |     Transaction Hash      |              From               |                To                |        Value (ETH)       |     Status     |");
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+
+//                int count = 1;
+//                foreach (var txHash in filterChanges)
+//                {
+//                    try
+//                    {
+//                        var tx = await web3.Eth.Transactions.GetTransactionByHash.SendRequestAsync(txHash);
+//                        var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(txHash);
+
+//                        // Display transaction details in a table format
+//                        Console.WriteLine($"| {count.ToString().PadLeft(3)} | {Format(tx.TransactionHash, 66)} | {Format(tx.From, 31)} | {Format(tx.To, 31)} | {Format(Web3.Convert.FromWei(tx.Value), 24)} | {Format(GetTransactionStatus(receipt), 15)} |");
+//                        count++;
+//                    }
+//                    catch (NullReferenceException ex)
+//                    {
+//                        // Handle NullReferenceException
+//                        throw new TransactionDisplayException("Error while processing transaction details: Transaction data is null.", ex);
+//                    }
+//                }
+
+//                Console.WriteLine("-----------------------------------------------------------------------------------------------------------------");
+//            }
+//            catch (Exception ex)
+//            {
+//                Console.WriteLine($"Error while retrieving pending transactions: {ex.Message}");
+//            }
+//        }
+
+//        private static string Format(string value, int width)
+//        {
+//            return value.PadRight(width).Substring(0, width);
+//        }
+
+//        private static string Format(decimal value, int width)
+//        {
+//            return value.ToString().PadRight(width).Substring(0, width);
+//        }
+
+//        private static string GetTransactionStatus(Nethereum.RPC.Eth.DTOs.TransactionReceipt receipt)
+//        {
+//            return receipt != null ? "Confirmed" : "Pending";
+//        }
+//    }
+
+//    public class TransactionDisplayException : Exception
+//    {
+//        public TransactionDisplayException()
+//        {
+//        }
+
+//        public TransactionDisplayException(string message)
+//            : base(message)
+//        {
+//        }
+
+//        public TransactionDisplayException(string message, Exception inner)
+//            : base(message, inner)
+//        {
+//        }
+//    }
+//}
